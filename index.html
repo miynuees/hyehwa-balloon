@@ -180,7 +180,7 @@
     <h2 class="etitle draw">PAUSE</h2>
     <p class="desc">잠깐 쉬는 중이에요</p>
     <button class="gbtn" onclick="resumeGame()">계속하기</button>
-    <button class="gbtn ghost" onclick="quitToMenu()">그만하고 메뉴로</button>
+    <button class="gbtn ghost" onclick="quitRun()">그만하고 메뉴로</button>
   </div>
 
   <!-- 2P 닉네임 설정 -->
@@ -843,7 +843,7 @@ function endRound(winner){
         <p class="bigword">${streak}연승째</p>
         <p class="desc">다음 라운드의 AI는 조금 더 빨라요.</p>
         <button class="gbtn" onclick="startRound()">라운드 ${level} 시작</button>
-        <button class="gbtn ghost" onclick="quitToMenu()">여기까지 (메뉴로)</button>`;
+        <button class="gbtn ghost" onclick="quitRun()">여기까지 (메뉴로)</button>`;
     }else if(winner){
       sfx('lose');
       const fin=streak;
@@ -874,6 +874,18 @@ function endRound(winner){
   showScr('endScr');
 }
 function restartRun(){ level=1; streak=0; startRound(); }
+/* 스스로 그만둘 때: 연승이 있으면 기록을 남길 기회를 주고 메뉴로 */
+function quitRun(){
+  if(mode==='ai' && streak>0){
+    scene='over'; paused=false;
+    const myName=lsRead(DB_NAME,'');
+    document.getElementById('endScr').innerHTML=`<h2 class="etitle win">${streak}연승 달성!</h2>
+      <p class="desc">여기까지의 연승을 명예의 전당에 남길 수 있어요.</p>
+      <div class="savebox" id="saveBox"><input id="rankName" maxlength="10" placeholder="이름" value="${esc(myName)}" onkeydown="if(event.key==='Enter')saveRankEntry(${streak})"><button class="gbtn mint" style="min-width:0;padding:10px 18px;font-size:14px;" onclick="saveRankEntry(${streak})">기록 남기기</button></div>
+      <button class="gbtn ghost" onclick="quitToMenu()">메뉴로</button>`;
+    showScr('endScr');
+  }else quitToMenu();
+}
 function quitToMenu(){ scene='menu'; paused=false; renderMenuRank(); showScr('menuScr'); }
 function resumeGame(){ paused=false; showScr(null); }
 function startMode(m){
