@@ -375,13 +375,16 @@ function genMap(){
 
 /* ---------- 플레이어 ---------- */
 function makePlayer(id, tx, ty, opts){
-  return Object.assign({
+  const p = Object.assign({
     id, x:tx*TILE+TILE/2, y:ty*TILE+TILE/2,
     face:1, dirx:0, diry:1, anim:0, moving:false,
     speed:BASE_SPEED, spdLv:1, maxBalloons:1, power:1, active:0,
     state:'alive', bubbleT:0, deadT:0,
     isAI:false, ctrl:null, color:null, skin:null, label:''
   }, opts);
+  // 라운드 시작 시점의 기본 능력치를 기억 → 점수판엔 '이번 라운드에 먹은 아이템 수'(현재값-기본값)를 표시
+  p.baseBalloons=p.maxBalloons; p.basePower=p.power; p.baseSpd=p.spdLv;
+  return p;
 }
 const COLORS={
   p1:{body:'#ff9db8', deep:'#e36a8c', dot:'#ff7fa3'},
@@ -1202,7 +1205,8 @@ function renderHud(){
     return;
   }
   const [a,b]=players.length? players : [null,null];
-  const stat=p=>p? `💧${p.maxBalloons} 🌊${p.power} 👟${p.spdLv}` : '';
+  // 이번 라운드에 먹은 아이템 개수(0부터 시작, 라운드마다 리셋)
+  const stat=p=>p? `💧${p.maxBalloons-p.baseBalloons} 🌊${p.power-p.basePower} 👟${p.spdLv-p.baseSpd}` : '';
   if(a){
     const d1=document.getElementById('dot1');
     d1.style.background=a.color.dot; d1.style.color=a.color.dot; // color는 네온 글로우용
