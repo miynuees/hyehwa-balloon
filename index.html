@@ -1192,6 +1192,15 @@ function drawPlayer(p,now){
   }
 }
 function renderHud(){
+  const mid=document.getElementById('hudMid');
+  // 메뉴(게임 시작 전/끝난 뒤)에선 직전 게임의 이름·능력치가 남지 않게 점수판을 비운다
+  if(scene==='menu'){
+    for(const id of ['name1','stat1','name2','stat2']) document.getElementById(id).textContent='';
+    document.getElementById('dot1').style.background='transparent';
+    document.getElementById('dot2').style.background='transparent';
+    mid.textContent='혜화 물풍선 대작전';
+    return;
+  }
   const [a,b]=players.length? players : [null,null];
   const stat=p=>p? `💧${p.maxBalloons} 🌊${p.power} 👟${p.spdLv}` : '';
   if(a){
@@ -1206,9 +1215,7 @@ function renderHud(){
     document.getElementById('name2').textContent=b.label;
     document.getElementById('stat2').textContent=stat(b);
   }
-  const mid=document.getElementById('hudMid');
-  if(scene==='menu') mid.textContent='혜화 물풍선 대작전';
-  else if(mode==='ai') mid.textContent=`라운드 ${level}${streak>0?' · '+streak+'연승중':''}`;
+  if(mode==='ai') mid.textContent=`라운드 ${level}${streak>0?' · '+streak+'연승중':''}`;
   else mid.textContent=`${names2p[0]} ${wins2p[0]} : ${wins2p[1]} ${names2p[1]}`;
 }
 
